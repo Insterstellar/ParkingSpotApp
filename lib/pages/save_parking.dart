@@ -22,7 +22,7 @@ class _SaveParkingState extends State<SaveParking> {
     print("hello world");
   }
 
-  List<String> cars= [
+  List<String> fakePlaces= [
   
 
 "Central Park Garage"          ,
@@ -147,7 +147,7 @@ class _SaveParkingState extends State<SaveParking> {
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(6),
+                  padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
                     color: MyColors.primarylight0,
@@ -183,7 +183,7 @@ class _SaveParkingState extends State<SaveParking> {
                   ),
                 ),
               ),
-//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
+//
               SizedBox(width: 12,),
               Container(
                 padding: EdgeInsets.all(12),

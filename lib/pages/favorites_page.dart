@@ -22,7 +22,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
   //var userParkingController;
   List<Parking> userFavoriteItems =[];
   var  userParkingController = UserParkingController(UserParkingService());
-
+  List<Parking> filteredFavorites=[];
+  int userId=2;
   @override
   void initState() {
     // TODO: implement initState
@@ -38,14 +39,30 @@ class _FavoritesPageState extends State<FavoritesPage> {
     var userParkingController = UserParkingController(UserParkingService());
      Future.delayed(const Duration(seconds: 1)) ;
     var  userNewFavoriteItems =await userParkingController.allFavorites(userId);
+     userFavoriteItems = userNewFavoriteItems;
      setState(() {
-                 userFavoriteItems = userNewFavoriteItems;
+       filteredFavorites=userFavoriteItems;
      });
+
+
 
 
   }
 
-int userId=2;
+  void filterFovorites(String query){
+    List<Parking> favoriteFilterItems=userFavoriteItems.where((element) => element
+            .name
+            .toString()
+            .toLowerCase()
+            .contains(query)).toList();
+
+    setState(() {
+      filteredFavorites=favoriteFilterItems;
+    });
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,17 +93,37 @@ int userId=2;
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
                       color: MyColors.primarylight0
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
                       Icon(Icons.search,color: MyColors.grey_1,),
                       SizedBox(width: 5,),
-                      CustomText(text: "Search parking", fontWeight: FontWeight.normal, fontSize: 14, textColor: MyColors.grey_1)
-                    ],
+                      Expanded(
+                        child: TextField(
+                          onChanged: (value){
+                            filterFovorites(value);
+                          },
+                          decoration: const InputDecoration(
+                            hintText: 'Search parking',
+                            hintStyle: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 14,
+                              color: MyColors.grey_1,
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                          ),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                            color: MyColors.grey_1,
+                          ),
+                        ),
+                      ),                    ],
                   ),
                 ),
               ),
@@ -104,10 +141,10 @@ int userId=2;
           SizedBox(height: 30,),
           Expanded(
             child: ListView.builder(
-              itemCount:userFavoriteItems.length,
+              itemCount:filteredFavorites.length,
               itemBuilder: (context, index) {
-                List<Gallery>? imageUrl = userFavoriteItems[index].gallery;
-                var favorites = userFavoriteItems[index];
+                List<Gallery>? imageUrl = filteredFavorites[index].gallery;
+                var favorites = filteredFavorites[index];
 
 
                 return CustomListWidget(parkingName: favorites ?.name ??"",address: favorites ?.location??"", onTap: (){
@@ -126,7 +163,7 @@ int userId=2;
                           //await userParkingController.
                       List<Parking> deletedFavorites = await userParkingController.deleteUserFavorite(userId, favorites.id!);
                       setState(() {
-                        userFavoriteItems=deletedFavorites;
+                        filteredFavorites=deletedFavorites;
                       });
                       for(Parking p in deletedFavorites){
                         print("-----------------favorite ha--------s been delete   : "+p.name.toString());
