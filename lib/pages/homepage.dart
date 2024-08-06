@@ -13,6 +13,8 @@ import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_list.dart';
 import 'package:parking/widgets/custom_text.dart';
 
+import 'favorites_page.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -33,7 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
     MainPage(),
      SaveParking(),
    // BookingPage(),
-    PaymentPage(),
+   FavoritesPage()
+   // PaymentPage(),
    // ParkingDetails()
   ];
   @override

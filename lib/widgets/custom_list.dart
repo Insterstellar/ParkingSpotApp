@@ -12,7 +12,8 @@ class CustomListWidget extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback addFavorite;
   final bool isAdded;
-  const CustomListWidget({super.key, required this.parkingName,required this.price,required this.distance, required this.address,required this.onTap, required this.imageUrl, required this.addFavorite, required this.isAdded});
+  final bool deleteButton;
+  const CustomListWidget({super.key, required this.parkingName,required this.price,required this.distance, required this.address,required this.onTap, required this.imageUrl, required this.addFavorite, required this.isAdded, this.deleteButton=false});
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +80,14 @@ class CustomListWidget extends StatelessWidget {
                         child: const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Icon(Icons.favorite_border, size: 16,color: MyColors.grey_1,),
+                        )) :deleteButton ?Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: MyColors.primarylight0
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.delete_outline_rounded, size: 16,color: MyColors.primary6,),
                         )) : Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
@@ -87,7 +96,7 @@ class CustomListWidget extends StatelessWidget {
                         child: const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Icon(Icons.favorite_border, size: 16,color: MyColors.primary1,),
-                        )),
+                        )) ,
                   )
                 ],),
             ),

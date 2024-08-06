@@ -4,7 +4,9 @@ import 'package:parking/models/Gallery.dart';
 import 'package:parking/models/parking_model.dart';
 import 'package:parking/pages/parking_details.dart';
 import 'package:parking/repo/controller/parking_controller.dart';
+import 'package:parking/repo/controller/user_parking_controller.dart';
 import 'package:parking/repo/services/ParkingServices.dart';
+import 'package:parking/repo/services/user_parking_service.dart';
 import 'package:parking/widgets/custom_list.dart';
 import 'package:parking/widgets/custom_text.dart';
 
@@ -65,32 +67,59 @@ class _SaveParkingState extends State<SaveParking> {
   "13 Maple Ridge, Bergen, Norway"         ,
   "20 Seafarer's Lane, Bergen, Norway"     ,
   ]     ;
-
   var  parkingController;
+  var  userParkingFavorites;
+  List<bool> notAdded= [];
+  var allFavorites=[];
+  int userId=2;
+  var userParkingController = UserParkingController(UserParkingService());
+  List<Parking> parkingSpots=[];
+  List<Parking> filterdParkingSpots=[];
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    //get all parking places
     parkingController=ParkingController(ParkingServices());
-
+    getAllParkingSpots();
+    //get all parking favorites
+    userParkingFavorites= UserParkingController(UserParkingService());
+    addToFavorites();
   }
 
-  List <bool> dd =[
-    true,
-  true
-  ];
+//to be refefoctered with stream controller or bloc
+  Future<void> addToFavorites() async{
+   allFavorites = await userParkingController.allFavorites(userId);
+  }
 
- // bool favoriteStatus= true;
-  //void AddFavorite(){
-  //  setState(() {
-  //    favoriteStatus =false;
-  //  });
-  //}
+  Future<void> getAllParkingSpots() async{
+     parkingSpots= await parkingController.getAllParkingSpots();
+     setState(() {
+       filterdParkingSpots=parkingSpots;
+     });
+
+
+  }
+  
+  void searchItems(String query){
+    List<Parking>filterSpots =parkingSpots
+        .where((item) {
+          return item.name!.toString().toLowerCase()
+        .contains(query.toLowerCase());
+        }).toList();
+    setState(() {
+      filterdParkingSpots=filterSpots;
+    });
+  }
+
 
 
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.only(left: 16.0,right: 16.0,top: 16.0,bottom: 0),
       child: Column(
@@ -107,7 +136,7 @@ class _SaveParkingState extends State<SaveParking> {
                   ),
 
                   child: Icon(Icons.menu_rounded)),
-              CustomText(text: "Save Parking", fontWeight: FontWeight.w500, fontSize: 20, textColor: MyColors.grey_1),
+              CustomText(text: "Search Parking", fontWeight: FontWeight.w500, fontSize: 20, textColor: MyColors.grey_1),
               ClipRRect(
                   borderRadius: BorderRadius.circular(50),
                   child: Image.asset("assets/images/carpark.jpeg", fit: BoxFit.cover, height: 50, width: 50,)),
@@ -118,20 +147,43 @@ class _SaveParkingState extends State<SaveParking> {
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: MyColors.primarylight0
+                    borderRadius: BorderRadius.circular(25),
+                    color: MyColors.primarylight0,
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(Icons.search,color: MyColors.grey_1,),
-                      SizedBox(width: 5,),
-                      CustomText(text: "Search parking", fontWeight: FontWeight.normal, fontSize: 14, textColor: MyColors.grey_1)
+                      SizedBox(width: 5),
+                      Icon(Icons.search, color: MyColors.grey_1),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: TextField(
+                          onChanged: (value){
+                            searchItems(value);
+                          },
+                          decoration: const InputDecoration(
+                            hintText: 'Search parking',
+                            hintStyle: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 14,
+                              color: MyColors.grey_1,
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                          ),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                            color: MyColors.grey_1,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
+//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
               SizedBox(width: 12,),
               Container(
                 padding: EdgeInsets.all(12),
@@ -144,54 +196,60 @@ class _SaveParkingState extends State<SaveParking> {
             ],
           ),
           SizedBox(height: 30,),
-          FutureBuilder<List<Parking>>(
-            future: parkingController.getAllParkingSpots(),
-            builder: (context, snapshot) {
-              return Expanded(
-                child: ListView.builder(
-                    itemCount: snapshot.data?.length ?? 0,
-                    itemBuilder: (context, index){
-                      print("the length is ----0000000000---"+snapshot.data!.length.toString());
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text('No data available'));
-                      }
-                      var parkingDetails = snapshot.data?[index];
-                      List<Gallery>? imageUrl = parkingDetails?.gallery;
-                      return CustomListWidget(parkingName: parkingDetails?.name ??"",address: parkingDetails?.location??"", onTap: (){
-                        String? clickedItem= parkingDetails?.name;
-                        print("the print index and car type is -------- : $clickedItem number is-- :$index") ;
+          Expanded(
+            child: ListView.builder(
+                itemCount: filterdParkingSpots.length,
+                itemBuilder: (context, index){
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ParkingDetails(parkingDetails: parkingDetails),
-                          ),
-                        );
-                      }, price: parkingDetails?.price??"", distance: parkingDetails?.distance??"", imageUrl: imageUrl?[0].imageUrl??"",
-                        addFavorite: () {
-                          //AddFavorite();
-                            setState(() {
-                              if(dd[index]==true){
-                                dd[index]=false;
-                              } else{
-                                dd[index]=true;
-                              }
+                  List<Gallery>? imageUrl = filterdParkingSpots[index].gallery;
+                  for(int a =0; a< filterdParkingSpots.length; a++){
+                    notAdded.add(true);
+                  }
+                  for(int a=0; a<allFavorites.length; a++ ){
+                    if( allFavorites[a].id==filterdParkingSpots[index].id){
+                        notAdded[index]=false;
 
-                            });
+                    }
+                  }
 
 
-                        
-                        }, isAdded:  dd[index],
-                      );
 
-                    }),
-              );
-            }
+                  return CustomListWidget(parkingName: filterdParkingSpots[index].name ??"",address: filterdParkingSpots[index].location??"", onTap: (){
+                    String? clickedItem= filterdParkingSpots[index].name;
+                    print("the print index and car type is -------- : $clickedItem number is-- :$index") ;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ParkingDetails(parkingDetails: filterdParkingSpots[index]),
+                      ),
+                    );
+                  }, price: filterdParkingSpots?[index]?.price??"", distance: filterdParkingSpots[index].distance??"", imageUrl: imageUrl?[0].imageUrl??"",
+                    addFavorite: () async{
+
+
+                        setState(() {
+                          if(notAdded[index]==true){
+
+                            userParkingFavorites.addToFavorites(userId,filterdParkingSpots[index].id);
+
+                            notAdded[index]=false;
+
+                          } else{
+                            notAdded[index]=true;
+                            userParkingController.deleteUserFavorite(userId, filterdParkingSpots[index].id!);
+
+                          }
+
+                        });
+
+
+
+                    }, isAdded: notAdded[index],
+                  );
+
+                }),
           ),
 
         ],
