@@ -101,7 +101,6 @@ class _BookingPageState extends State<BookingPage> {
 
 
                        setState(() {
-
                          if(parkingSpot?.spotAvailable?[index].isOccupied== true){
 
                           updateSpotController.updateParkingSpot(parkingSpot?.spotAvailable?[index].id, false);

@@ -52,10 +52,9 @@ class ParkingServices with ChangeNotifier  implements ParkingInterface {
   Future<SpotAvailable> bookSpot(int id, bool available) async {
 
 
-    var url = Uri.parse("${Urls.baseUrl+Urls.baseUrl}parking/updateSpot/$id/$available");
+    var url = Uri.parse("${Urls.baseUrl+Urls.apiV}parking/updateSpot/$id/$available");
     var response =await  http.put(url);
     SpotAvailable spotAvailable= SpotAvailable();
-
 
       if (response.statusCode == 200){
         print(' spot has been updated ----------------success----------------'+response.statusCode.toString());
@@ -68,7 +67,8 @@ class ParkingServices with ChangeNotifier  implements ParkingInterface {
 
       }
       else {
-        print('Failed to update spot with status code: ');
+        print('Failed to update spot with status code: '+response.statusCode.toString());
+
         // Handle the error appropriately
         throw Exception('Failed to update spot');
       }
