@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:parking/booking/mytetxwidget.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/models/Amenities.dart';
 import 'package:parking/models/Gallery.dart';
@@ -118,15 +119,15 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                     ),
                   ),
                   leading: IconButton(
-                    icon: Icon(Icons.arrow_back),
+                    icon: Icon(Icons.arrow_back,color: Colors.white,),
                     onPressed: () {Navigator.pop(context); },
                   ),
                   actions: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.share), onPressed: () {},
+                      icon: Icon(Icons.share,color: Colors.white), onPressed: () {},
                     ),// overflow menu
                     IconButton(
-                      icon: Icon(Icons.bookmark_border), onPressed: () {},
+                      icon: Icon(Icons.bookmark_border, color: Colors.white,), onPressed: () {},
                     ),
                   ],
                 ),
@@ -150,18 +151,26 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                             CustomText(text: parkingapots?.location??"", fontWeight: FontWeight.w300, fontSize: 13, textColor: MyColors.grey_10),
                           ],
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: MyColors.primarylight0,
-                              borderRadius: BorderRadius.circular(50)),
 
-                          child: const Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: Icon(Icons.favorite_border, color: MyColors.grey_20,),
-                          ),
-                        ),
 
                       ],
+                    ),
+                    SizedBox(height: 5,),
+                    Container(
+                      width: 100,
+                      decoration: BoxDecoration(
+                          color: MyColors.primarylight0,
+                          borderRadius: BorderRadius.circular(50)),
+
+                      child:  Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(Icons.local_taxi_sharp, color: MyColors.primary6,size: 14,),
+                          ),
+                          CustomText(text: "24 Slots", fontWeight: FontWeight.w900, fontSize: 12, textColor: MyColors.primary6),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 15,),
 
@@ -275,17 +284,39 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
               left: 16,
               child: Column(
                 children: [
-                  CustomButton(buttonText: "Continue",onTap: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            BookingPage(parkingSpot:parkingapots ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(buttonText: "Schedule",onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  BookingPage(parkingSpot:parkingapots ),
+                            ),
+                          );
+                        
+                        },
+                            btnColor: MyColors.grey_5, buttonTextColor: MyColors.primary1),
                       ),
-                    );
-
-                  },
-                      btnColor: MyColors.primary6, buttonTextColor: MyColors.primary1,btnWidth: MediaQuery.of(context).size.width-60,),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: CustomButton(buttonText: "Book Now",onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  BookingPage(parkingSpot:parkingapots ),
+                            ),
+                          );
+                        
+                        },
+                            btnColor: MyColors.primary6, buttonTextColor: MyColors.primary1),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 16,)
 
                 ],

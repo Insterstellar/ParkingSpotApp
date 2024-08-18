@@ -147,7 +147,7 @@ class _BookingPageState extends State<BookingPage> {
 
             Padding(
               padding:  EdgeInsets.all(16.0),
-              child: CustomButton(buttonText: "Continue", onTap: (){
+              child: CustomButton(buttonText: "C o n t i n u e", onTap: (){
 
                 Navigator.push(
                   context,

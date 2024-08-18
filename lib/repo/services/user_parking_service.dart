@@ -43,7 +43,7 @@ class UserParkingService implements UserParkingInterface {
       return userFavorites;
     } else {
 
-      throw Exception("failed to get data");
+      throw Exception("failed to get data"+response.statusCode.toString());
     }
 
   }

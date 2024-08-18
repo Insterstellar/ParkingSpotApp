@@ -17,6 +17,8 @@ class _StatuscheckState extends State<Statuscheck> {
   var colos= MyColors.primary1;
   String  hello= "Hello --world";
 
+
+  double theValueChanged = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +28,19 @@ class _StatuscheckState extends State<Statuscheck> {
         
 
           children: [
-            MytxtWidget(newTxt: hello),
+
+            Slider(
+              value: theValueChanged,
+              max: 100,
+              divisions: 100,
+              label: theValueChanged.round().toString(),
+              onChanged: (double value) {
+                setState(() {
+                  theValueChanged= value;
+                });
+              },
+            ),
+            MytxtWidget(newTxt: theValueChanged.toString()),
             CustomText(text: "Add Number ", fontWeight: FontWeight.bold, fontSize: 12 ,textColor:MyColors.primary1 ),
             CustomButton(buttonText: "Continue", onTap: (){
 

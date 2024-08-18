@@ -35,8 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
     MainPage(),
      SaveParking(),
    // BookingPage(),
-   FavoritesPage()
-   // PaymentPage(),
+   FavoritesPage(),
+    PaymentPage()
    // ParkingDetails()
   ];
   @override
@@ -64,15 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
               label: 'Save Parking',
               backgroundColor: MyColors.primarylight0,
             ),
-           /* BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.book_outlined),
               label: 'Booking',
               backgroundColor: MyColors.primarylight0,
-            ),*/
+            ),
 
             BottomNavigationBarItem(
-              icon: Icon(Icons.book_outlined),
-              label: 'Payment',
+              icon: Icon(Icons.person),
+              label: 'Profile',
               backgroundColor: MyColors.primarylight0,
             ),
 
