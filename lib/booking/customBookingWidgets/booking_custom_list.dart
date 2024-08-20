@@ -42,7 +42,7 @@ class BookingCustomList extends StatelessWidget {
                       SizedBox(height: 5,),
                       CustomText(text: "9/82034", fontWeight: FontWeight.w400, fontSize: 13, textColor: MyColors.grey_20),
                       SizedBox(height: 5,),
-                      CustomText(text: "5kr/Hours", fontWeight: FontWeight.w400, fontSize: 13, textColor: MyColors.grey_20),
+                      CustomText(text: "5kr/Hours", fontWeight: FontWeight.w900, fontSize: 13, textColor: MyColors.grey_20),
                     ],
                   )
 

@@ -15,7 +15,7 @@ class Statuscheck extends StatefulWidget {
 
 class _StatuscheckState extends State<Statuscheck> {
   var colos= MyColors.primary1;
-  String  hello= "Hello --world";
+
 
 
   double theValueChanged = 0;
@@ -45,7 +45,7 @@ class _StatuscheckState extends State<Statuscheck> {
             CustomButton(buttonText: "Continue", onTap: (){
 
               setState(() {
-               hello="Hello to the world";
+               
               });
 
 
