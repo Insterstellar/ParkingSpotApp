@@ -1,24 +1,34 @@
 import 'dart:async';
+import 'dart:developer';
+
+
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geocoding/geocoding.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:parking/booking/my_bookings.dart';
+import 'package:parking/data/keys.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/models/parking_model.dart';
 import 'package:parking/pages/parking_details.dart';
 import 'package:parking/permissions/location_permission.dart';
 import 'package:parking/repo/controller/parking_controller.dart';
 import 'package:parking/repo/services/ParkingServices.dart';
+import 'package:parking/util/coordinates_to_Address.dart';
 import 'package:parking/util/image_converter.dart';
 import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_text.dart';
 import 'package:parking/widgets/review_list_widget.dart';
 import 'package:flutter/services.dart' show rootBundle;
+
 
 import '../booking/date_and_time_page.dart';
 
@@ -62,6 +72,7 @@ class _MainPageState extends State<MainPage>  {
   Position? _currentPosition;
   final Completer<GoogleMapController>? _mapController = Completer();
   List<Parking>parkingSpaces =[];
+
 
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -141,41 +152,131 @@ class _MainPageState extends State<MainPage>  {
 
   void addMarkers() {
     var cordinates;
+    String? location;
     for (int a =0; a<parkingSpaces.length; a++)   {
       var locationCordinates = parkingSpaces[a].location;
       if(locationCordinates !=null){
          cordinates = locationCordinates.split(',');
-        print("the cordinates are ------"+ cordinates.toString());
+        print("the cordinates are ------"+ cordinates.toString());
 
       }
 
         _markers.add(Marker(
           markerId: MarkerId(parkingSpaces[a].id.toString()),
           position: LatLng(double.parse(cordinates[0]),double.parse(cordinates[1])),
-          infoWindow:  InfoWindow(title: parkingSpaces[a].name,snippet: parkingSpaces[a].price,onTap: (){
 
-            Parking pk = parkingSpaces[a];
-            print("all number of spots are :"+   parkingSpaces[a].name.toString());
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ParkingDetails(
-                    parkingDetails:  parkingSpaces[a]),
-              ),
-            );
-
-          }),
           icon: customMarker != null
               ? BitmapDescriptor.fromBytes(customMarker!)
               : BitmapDescriptor.defaultMarker,
+          onTap: () async{
+
+            String? parkingCordinates = locationCordinates;
+
+
+              AddressConverter addressConverter = AddressConverter();
+              location= await addressConverter.coordinatesToAddres(parkingCordinates!);
+
+
+
+
+            await showBottomSheet(
+              backgroundColor: MyColors.primarylight,
+                context: context, builder: (BuildContextcontext){
+                //code to be refactored into a separate widget
+                  return Container(
+                   // height: 200,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: parkingSpaces[a].gallery![0].imageUrl.toString().isEmpty?Image.asset("assets/images/smallcar.png", height: 50,width: 50,fit: BoxFit.cover,) :
+                                Image.network(
+                                  parkingSpaces[a].gallery![0].imageUrl.toString(),
+                                  height: 100,
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      "assets/images/smallcar.png",
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 10,),
+                               Expanded(
+                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CustomText(text: parkingSpaces[a].name.toString(), fontWeight: FontWeight.bold, fontSize: 16, textColor: MyColors.grey_10),
+                                    CustomText(text: location ?? "", fontWeight: FontWeight.w400, fontSize: 16, textColor: MyColors.grey_20),
+                                    CustomText(text: "${parkingSpaces[a].price}kr/hr", fontWeight: FontWeight.w300, fontSize: 16, textColor: MyColors.grey_20),
+                                    CustomText(text: parkingSpaces[a].distance.toString(), fontWeight: FontWeight.w200, fontSize: 16, textColor: MyColors.grey_20),
+                                 
+                                 
+                                 
+                                  ],
+                                                               ),
+                               ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          height: 1,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+
+                              Expanded(child: CustomButton(buttonText: "Cancel", onTap: (){
+                                Navigator.pop(context);
+                              }, btnColor: MyColors.grey_20,buttonTextColor: MyColors.primary1,)),
+                              SizedBox(width: 10,),
+                              Expanded(child: CustomButton(buttonText: "Book Now", onTap: (){
+                           String? convertedLocation= location;
+                            parkingSpaces[a].location=convertedLocation;
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ParkingDetails(
+                                        parkingDetails:  parkingSpaces[a]),
+                                  ),
+                                );
+
+
+                              }, btnColor: MyColors.primary6,buttonTextColor: MyColors.primary1,)),
+
+
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+            });
+
+          }
         ));
 
 
 
-
-
-
-    print("the makrer is ------------${LatLng(listMarker[a].longitude,listMarker[a].latitude)}");
     }
   }
 
@@ -233,23 +334,7 @@ backgroundColor: MyColors.primary1,
         children: [
 
           googleMapWidget,
-          Positioned(
-            top: 200,
-            right: 0,
-            left: 0,
-            child:
 
-            CustomButton(buttonText: "Check widget", onTap: (){
-              //pages
-              //SetTimePage()
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyBooking(),
-                ),
-              );
-
-            }),),
            Positioned(
             top: 0,
             right: 0,

@@ -6,10 +6,15 @@ import 'package:parking/widgets/custom_text.dart';
 
 class ReviewListWidget extends StatelessWidget {
  final String usersnames;
-  const ReviewListWidget({super.key, required this.usersnames});
+ final String? profileImage;
+ final int stars;
+ final String review;
+
+  const ReviewListWidget({super.key, required this.usersnames,  required this.review, required this.stars, required this.profileImage});
 
   @override
   Widget build(BuildContext context) {
+   //String? profileImage="";
 
 
     return Column(
@@ -21,7 +26,19 @@ class ReviewListWidget extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(50),
-              child: Image.asset("assets/images/carpark.jpeg",height:50, width:50,fit: BoxFit.cover),
+              child: profileImage == null ?
+              Image.asset("assets/images/avataricon.png",fit: BoxFit.cover,height: 50, width: 50,):
+              Image.network(
+                profileImage??'',
+
+                fit: BoxFit.cover,height: 50, width: 50,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    "assets/images/avataricon.png",
+                    fit: BoxFit.cover, height: 50, width: 50,
+                  );
+                },
+              ),
 
             ),
             SizedBox(width: 10,),
@@ -36,9 +53,12 @@ class ReviewListWidget extends StatelessWidget {
                       Spacer(),
                       Row(
                         children: [
-                          Icon(Icons.star, color: Colors.amber,),
-                          Icon(Icons.star, color: Colors.amber,),
-                          Icon(Icons.star, color: Colors.amber,),
+                          for( int a =0; a< stars; a++)
+                            Icon(Icons.star, color: Colors.amber,),
+
+
+
+
                         ],
                       ),
 
@@ -46,7 +66,7 @@ class ReviewListWidget extends StatelessWidget {
 
                     ],
                   ),
-                  CustomText(text: "The Smart Parking app is a game-changer. It saves time, reduces stress, and prevents parking tickets with real-time spot availability and smart notifications. Highly convenient and efficient for frequent drivers.", fontWeight: FontWeight.w300, fontSize: 13, textColor: MyColors.grey_10),
+                  CustomText(text: review.toString(), fontWeight: FontWeight.w300, fontSize: 13, textColor: MyColors.grey_10),
 
                 ],
               ),

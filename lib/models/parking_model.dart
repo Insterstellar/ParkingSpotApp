@@ -1,6 +1,7 @@
 import 'package:parking/models/Amenities.dart';
 import 'package:parking/models/Gallery.dart';
 import 'package:parking/models/SpotAvailable.dart';
+import 'package:parking/models/reveiw_parking.dart';
 
 class Parking {
   int? id;
@@ -10,8 +11,9 @@ class Parking {
   String? price;
   String? distance;
   int? numberOfSpots;
-  List<SpotAvailable>? spotAvailable;
   String? coordinates;
+  List<SpotAvailable>? spotAvailable;
+  List<ReviewParking>? reviewParking;
   List<Gallery>? gallery;
   List<Amenities>? amenities;
 
@@ -23,8 +25,9 @@ class Parking {
         this.price,
         this.distance,
         this.numberOfSpots,
-        this.spotAvailable,
         this.coordinates,
+        this.spotAvailable,
+        this.reviewParking,
         this.gallery,
         this.amenities});
 
@@ -36,17 +39,23 @@ class Parking {
     price = json['price'];
     distance = json['distance'];
     numberOfSpots = json['numberOfSpots'];
+    coordinates = json['coordinates'];
     if (json['spotAvailable'] != null) {
       spotAvailable = <SpotAvailable>[];
       json['spotAvailable'].forEach((v) {
         spotAvailable!.add(new SpotAvailable.fromJson(v));
       });
     }
-    coordinates = json['coordinates'];
+    if (json['reviewParking'] != null) {
+      reviewParking = <ReviewParking>[];
+      json['reviewParking'].forEach((v) {
+        reviewParking!.add(new ReviewParking.fromJson(v));
+      });
+    }
     if (json['gallery'] != null) {
       gallery = <Gallery>[];
       json['gallery'].forEach((v) {
-        gallery!.add(new Gallery.fromJson(v));
+        gallery!.add(Gallery.fromJson(v));
       });
     }
     if (json['amenities'] != null) {
@@ -66,11 +75,15 @@ class Parking {
     data['price'] = this.price;
     data['distance'] = this.distance;
     data['numberOfSpots'] = this.numberOfSpots;
+    data['coordinates'] = this.coordinates;
     if (this.spotAvailable != null) {
       data['spotAvailable'] =
           this.spotAvailable!.map((v) => v.toJson()).toList();
     }
-    data['coordinates'] = this.coordinates;
+    if (this.reviewParking != null) {
+      data['reviewParking'] =
+          this.reviewParking!.map((v) => v.toJson()).toList();
+    }
     if (this.gallery != null) {
       data['gallery'] = this.gallery!.map((v) => v.toJson()).toList();
     }
@@ -80,13 +93,3 @@ class Parking {
     return data;
   }
 }
-
-
-
-
-
-
-
-
-
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/models/Gallery.dart';
 import 'package:parking/models/parking_model.dart';
@@ -65,7 +66,7 @@ class _SaveParkingState extends State<SaveParking> {
   var userParkingFavorites;
   List<bool> notAdded = [];
   var allFavorites = [];
-  int userId = 2;
+  int userId = 1;
   var userParkingController = UserParkingController(UserParkingService());
   List<Parking> parkingSpots = [];
   List<Parking> filterdParkingSpots = [];
@@ -80,9 +81,11 @@ class _SaveParkingState extends State<SaveParking> {
     //get all parking favorites
     userParkingFavorites = UserParkingController(UserParkingService());
     addToFavorites();
+
   }
 
 //to be refefoctered with stream controller or bloc
+
   Future<void> addToFavorites() async {
     allFavorites = await userParkingController.allFavorites(userId);
   }
@@ -93,6 +96,9 @@ class _SaveParkingState extends State<SaveParking> {
       filterdParkingSpots = parkingSpots;
       notAdded.clear();
       for (int a = 0; a < filterdParkingSpots.length; a++) {
+        String location = filterdParkingSpots[a].location.toString();
+        fromCoordinatesToAdrress(location, a);
+
         notAdded.add(true);
       }
 
@@ -111,12 +117,46 @@ class _SaveParkingState extends State<SaveParking> {
       return item.name!.toString().toLowerCase().contains(query.toLowerCase());
     }).toList();
     setState(() {
+
       filterdParkingSpots = filterSpots;
     });
   }
+Placemark address  =Placemark();
+
+
+  void fromCoordinatesToAdrress(String location ,int index) async{
+    if(location.isNotEmpty){
+      String locate = location;
+
+      List<String> coordinates = locate.split(',');
+      double latitude = double.parse(coordinates [0]);
+      double longitude = double.parse(coordinates [1]);
+
+      List<Placemark> placeMarker = await placemarkFromCoordinates(latitude, longitude);
+
+      if (placeMarker.isNotEmpty) {
+        address = placeMarker.first; // Store the first placemark in the list at the correct index
+        String locationConcatenation = "${address.street} ${address.postalCode}, ${address.subAdministrativeArea}";
+        setState(() {
+          filterdParkingSpots[index].location=locationConcatenation;
+
+        });
+
+
+      }
+
+
+
+    }
+
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding:
           const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 0),
@@ -214,12 +254,10 @@ class _SaveParkingState extends State<SaveParking> {
                 itemCount: filterdParkingSpots.length,
                 itemBuilder: (context, index) {
                   List<Gallery>? imageUrl = filterdParkingSpots[index].gallery;
-
                   return CustomListWidget(
                     parkingName: filterdParkingSpots[index].name ?? "",
-                    address: filterdParkingSpots[index].location ?? "",
+                    address:  filterdParkingSpots[index].location.toString(),
                     onTap: () {
-                      String? clickedItem = filterdParkingSpots[index].name;
 
                       Navigator.push(
                         context,
@@ -228,6 +266,7 @@ class _SaveParkingState extends State<SaveParking> {
                               parkingDetails: filterdParkingSpots[index]),
                         ),
                       );
+
                     },
                     price: filterdParkingSpots?[index]?.price ?? "",
                     distance: filterdParkingSpots[index].distance ?? "",
@@ -235,8 +274,7 @@ class _SaveParkingState extends State<SaveParking> {
                     addFavorite: () async {
                       setState(() {
                         if (notAdded[index] == true) {
-                          userParkingFavorites.addToFavorites(
-                              userId, filterdParkingSpots[index].id);
+                          userParkingFavorites.addToFavorites(userId, filterdParkingSpots[index].id);
 
                           notAdded[index] = false;
                         } else {

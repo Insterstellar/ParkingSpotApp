@@ -16,8 +16,6 @@ class Statuscheck extends StatefulWidget {
 class _StatuscheckState extends State<Statuscheck> {
   var colos= MyColors.primary1;
 
-
-
   double theValueChanged = 0;
   @override
   Widget build(BuildContext context) {
@@ -25,10 +23,7 @@ class _StatuscheckState extends State<Statuscheck> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-        
-
           children: [
-
             Slider(
               value: theValueChanged,
               max: 100,
@@ -41,7 +36,7 @@ class _StatuscheckState extends State<Statuscheck> {
               },
             ),
             MytxtWidget(newTxt: theValueChanged.toString()),
-            CustomText(text: "Add Number ", fontWeight: FontWeight.bold, fontSize: 12 ,textColor:MyColors.primary1 ),
+            const CustomText(text: "Add Number ", fontWeight: FontWeight.bold, fontSize: 12 ,textColor:MyColors.primary1 ),
             CustomButton(buttonText: "Continue", onTap: (){
 
               setState(() {

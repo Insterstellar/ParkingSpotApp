@@ -1,6 +1,8 @@
 import 'package:parking/models/parking_model.dart';
 import 'package:parking/repo/services/ParkingServices.dart';
 
+import '../../models/SpotAvailable.dart';
+
 class ParkingController {
   final ParkingServices _parkingServices;
 
@@ -11,8 +13,8 @@ class ParkingController {
     return await _parkingServices.getAllParkingSpots();
   }
 
-   void updateParkingSpot (id, available) async{
-    await _parkingServices.bookSpot(id, available);
+   void updateParkingSpot (int userId, SpotAvailable spotAvailable) async{
+    await _parkingServices.bookSpot(userId,spotAvailable);
 
   }
 }

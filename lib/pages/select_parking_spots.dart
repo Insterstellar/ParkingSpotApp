@@ -13,15 +13,20 @@ import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_text.dart';
 import 'package:parking/widgets/parkingdesignwidget/parking_design_widget.dart';
 
-class BookingPage extends StatefulWidget {
+import '../booking/booking_confirmation.dart';
+import '../booking/date_and_time_page.dart';
+import '../booking/parkingstate/extended_parking_time.dart';
+import '../booking/parkingstate/parking_time_status.dart';
+
+class SelectParkingSPotsPage extends StatefulWidget {
   final Parking? parkingSpot;
-  const BookingPage({super.key,  this.parkingSpot});
+  const SelectParkingSPotsPage({super.key,  this.parkingSpot});
 
   @override
-  State<BookingPage> createState() => _BookingPageState();
+  State<SelectParkingSPotsPage> createState() => _SelectParkingSPotsPageState();
 }
 
-class _BookingPageState extends State<BookingPage> {
+class _SelectParkingSPotsPageState extends State<SelectParkingSPotsPage> {
   bool accessible =true;
 
   void isVailable (){
@@ -42,8 +47,9 @@ class _BookingPageState extends State<BookingPage> {
      parkingSpot=widget.parkingSpot;
   }
 
-  var updateSpotController = ParkingController(ParkingServices());
+
   var parkingController=ParkingController(ParkingServices());
+  int? parkingSpotId;
 
 
   @override
@@ -61,15 +67,20 @@ class _BookingPageState extends State<BookingPage> {
                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: MyColors.grey_80
-                    ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Icon(Icons.arrow_back,color: MyColors.grey_40,),
-                      )),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: MyColors.grey_80
+                      ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Icon(Icons.arrow_back,color: MyColors.grey_10,),
+                        )),
+                  ),
                   SizedBox(width: 20,),
                   CustomText(text: "Choose Space", fontWeight: FontWeight.w400, fontSize: 23, textColor: MyColors.grey_20),
                 ],
@@ -90,9 +101,9 @@ class _BookingPageState extends State<BookingPage> {
                   padding: EdgeInsets.all(20),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 10,),
                   itemBuilder: (context, index){
-                  print("the list of parking of parking spots ${parkingSpot!.spotAvailable![3].isOccupied}");
 
-                  var spotStatus =parkingSpot?.spotAvailable?[index].isOccupied ?? false;
+
+                    var spotStatus =parkingSpot?.spotAvailable?[index].isOccupied ?? false;
 
 
                     return Padding(
@@ -100,22 +111,15 @@ class _BookingPageState extends State<BookingPage> {
                       child: ParkingDesignWidget(onTap: () {
 
 
+
                        setState(() {
                          if(parkingSpot?.spotAvailable?[index].isOccupied== true){
+                          //updateSpotController.updateParkingSpot(parkingSpot?.spotAvailable?[index].id, false);
+                       parkingSpot!.spotAvailable?[index].isOccupied=false;
 
-                          updateSpotController.updateParkingSpot(parkingSpot?.spotAvailable?[index].id, false);
-                        var checkStatus =parkingSpot?.spotAvailable;
-                         checkStatus?[index].isOccupied =false;
+                       parkingSpotId=parkingSpot?.spotAvailable?[index].id;
 
 
-
-                         /*  Navigator.push(
-                             context,
-                             MaterialPageRoute(
-                               builder: (context) =>
-                                   BookingPage(parkingSpot: parkingSpot,),
-                             ),
-                           );*/
 
                          }
                          else {
@@ -133,7 +137,11 @@ class _BookingPageState extends State<BookingPage> {
                                  content: const Text("Spot not available!", style: TextStyle(color: MyColors.primary6),),
                                )) ;
                            print("occupied!:$index");
-                           print("number of------ spots are "+parkingSpot!.numberOfSpots.toString()??"");
+                           print("number of------ spots are "+parkingSpot!.spotAvailable![index].id.toString());
+                          // print("number of------ show boolen "+parkingSpot!.spotAvailable![index].isOccupied);
+                          // print("number of------ spots are "+parkingSpot!.spotAvailable![index].duration.toString());
+
+
                          }
 
                        });
@@ -147,18 +155,29 @@ class _BookingPageState extends State<BookingPage> {
 
             Padding(
               padding:  EdgeInsets.all(16.0),
-              child: CustomButton(buttonText: "C o n t i n u e", onTap: (){
+              child: CustomButton(buttonText: "Continue", onTap: (){
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        Statuscheck(),
-                  ),
-                );
+                 if(parkingSpotId!=null){
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                   return SetTimePage (parking: parkingSpot ,parkingSpotId: parkingSpotId ,);
+                  }));
+                }else{
 
-                print("the number of------ number of are "+parkingSpot!.numberOfSpots.toString());
-                print("the number of------ lists are "+parkingSpot!.description.toString());
+                        final snack= SnackBar(
+                             content: CustomText(text: "Please select a spot !", fontWeight: FontWeight.w600, fontSize: 12, textColor: MyColors.grey_20,),
+                             backgroundColor: MyColors.grey_100_);
+
+                        ScaffoldMessenger.of(context).showSnackBar(snack);
+
+
+
+                }
+
+
+
+
+
+
               },
                 btnColor: MyColors.primary6,
                 buttonTextColor: MyColors.primary1,),

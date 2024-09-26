@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class MyColors{
 
-
   static const Color primary1 = Color(0xFF121620);
   static const Color primary2 = Color(0xFF0B6477);
   static const Color primary3 = Color(0xFF14919B);

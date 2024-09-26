@@ -7,9 +7,13 @@ import '../../widgets/custom_text.dart';
 
 class BookingCustomList extends StatelessWidget {
   final String viewTimer;
+  final String? stationName;
+  final String? streetName;
+  final String? dateTime;
+  final String? price;
   final VoidCallback onTap;
   final VoidCallback viewTicket;
-  const BookingCustomList({super.key, required this.viewTimer, required this.onTap, required this.viewTicket});
+  const BookingCustomList({super.key, required this.viewTimer, required this.onTap, required this.viewTicket, this.stationName, this.streetName,  this.price, this.dateTime});
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +36,20 @@ class BookingCustomList extends StatelessWidget {
                 children: [
                   Image.asset("assets/images/carpark.jpeg", fit: BoxFit.cover, height: 100,width: 100,),
                   SizedBox(width: 10,),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 5,),
-                      CustomText(text: "Bergen Parking Station", fontWeight: FontWeight.w600, fontSize: 16, textColor: MyColors.grey_20),
-                      SizedBox(height: 5,),
-                      CustomText(text: "123th street togAlmingen", fontWeight: FontWeight.w400, fontSize: 13, textColor: MyColors.grey_20),
-                      SizedBox(height: 5,),
-                      CustomText(text: "9/82034", fontWeight: FontWeight.w400, fontSize: 13, textColor: MyColors.grey_20),
-                      SizedBox(height: 5,),
-                      CustomText(text: "5kr/Hours", fontWeight: FontWeight.w900, fontSize: 13, textColor: MyColors.grey_20),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 5,),
+                        CustomText(text: stationName.toString(), fontWeight: FontWeight.w600, fontSize: 16, textColor: MyColors.grey_20),
+                        SizedBox(height: 5,),
+                        CustomText(text: streetName.toString(), fontWeight: FontWeight.w400, fontSize: 13, textColor: MyColors.grey_20),
+                        SizedBox(height: 5,),
+                       // CustomText(text: dateTime.toString(), fontWeight: FontWeight.w400, fontSize: 13, textColor: MyColors.grey_20),
+                        SizedBox(height: 5,),
+                        CustomText(text: "${price}kr/Hours", fontWeight: FontWeight.w900, fontSize: 13, textColor: MyColors.grey_20),
+                      ],
+                    ),
                   )
 
                 ],

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 
+import '../booking/my_bookings.dart';
 import '../misc/mycolors/mycolors.dart';
 import '../widgets/custom_text.dart';
 
@@ -57,7 +58,12 @@ class BookingConfirmationDialogState extends State<BookingConfirmationDialog>{
                       ),
                       child: Text("View Parking Ticket", style: TextStyle(color: Colors.white)),
                       onPressed: (){
-                        Navigator.of(context).pop();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MyBooking(),
+                          ),
+                        );
                        // MyToast.show("Get Started clicked", context);
                       },
                     ),

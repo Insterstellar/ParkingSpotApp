@@ -8,38 +8,24 @@ import 'package:parking/repo/interface/parking_interface.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 
-class ParkingServices with ChangeNotifier  implements ParkingInterface {
-
-
+class ParkingServices with ChangeNotifier implements ParkingInterface {
   @override
-  Future<List<Parking>> getAllParkingSpots() async{
-    List<Parking> parkingList =[];
-    print("print the status code -----------hello world----1");
+  Future<List<Parking>> getAllParkingSpots() async {
+    List<Parking> parkingList = [];
     var url = Uri.parse("${Urls.baseUrl}api/v1/parking/all");
-    print("print the status code -----------hello world222----2");
     var response = await http.get(url);
-    print("print the status code -----------hello world222---jsjsjj@@@@@@@-"+response.statusCode.toString());
-    if(response.statusCode==200) {
+    if (response.statusCode == 200) {
       var body = json.decode(response.body);
-      for(var i=0; i< body.length; i++){
-       parkingList.add(Parking.fromJson(body[i]));
-       print("print the status code ---------------"+response.statusCode.toString());
-      // print("print the status 2 ---------------"+parkingList[1].name.toString());
-
-
-
+      for (var i = 0; i < body.length; i++) {
+        parkingList.add(Parking.fromJson(body[i]));
 
       }
-      print("print the status code ---------------"+response.statusCode.toString());
+      print("all Parking Spots succeded ---------------" +
+          response.statusCode.toString());
       return parkingList;
+    } else {
+      throw Exception('Failed to load data for all parking spots------'+response.statusCode.toString());
     }
-
-    else {
-      throw Exception('Failed to load data');
-
-    }
-
-
   }
 
   @override
@@ -49,38 +35,28 @@ class ParkingServices with ChangeNotifier  implements ParkingInterface {
   }
 
   @override
-  Future<SpotAvailable> bookSpot(int id, bool available) async {
+  Future<SpotAvailable> bookSpot(int userId, SpotAvailable spotAvailable) async {
+
+    var url = Uri.parse("${Urls.baseUrl + Urls.apiV}parking/updateSpot/$userId");
 
 
-    var url = Uri.parse("${Urls.baseUrl+Urls.apiV}parking/updateSpot/$id/$available");
-    var response =await  http.put(url);
-    SpotAvailable spotAvailable= SpotAvailable();
-
-      if (response.statusCode == 200){
-        print(' spot has been updated ----------------success----------------'+response.statusCode.toString());
-        
-        //var body = jsonDecode(response.body);
-        //spotAvailable = SpotAvailable.fromJson(body);
-        return spotAvailable;
+    var response = await http.put(
+      url,
+   headers:{'Content-Type': 'application/json'},
+      body: jsonEncode(spotAvailable));
 
 
-
-      }
-      else {
-        print('Failed to update spot with status code: '+response.statusCode.toString());
-
-        // Handle the error appropriately
-        throw Exception('Failed to update spot');
-      }
-
-
-      // TODO: implement bookSpot
-
-
-
-
-
+    if (response.statusCode == 200) {
+      print('Spot has been updated successfully: ' + response.statusCode.toString());
+      return spotAvailable;
+    } else {
+      // Handle any other status code as a failure
+      print('Failed to update spot with status code: ' + response.statusCode.toString());
+      throw Exception('Failed to update spot: ' + response.statusCode.toString());
     }
 
+
+    // TODO: implement bookSpot
+  }
 
 }

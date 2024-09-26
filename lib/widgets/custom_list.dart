@@ -39,35 +39,37 @@ class CustomListWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: imageUrl.isEmpty ?Image.asset("assets/images/carpark.jpeg", height: 50,width: 50,fit: BoxFit.cover,) :
-                          Image.network(
-                            imageUrl,
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                "assets/images/carpark.jpeg",
-                                width: 50,
-                                height: 50,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
-                      ),
-                      SizedBox(width: 15,),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomText(text: parkingName, fontWeight: FontWeight.w700, fontSize: 16, textColor: MyColors.grey_1),
-                          CustomText(text: address, fontWeight: FontWeight.w300, fontSize: 13.6, textColor: MyColors.grey_1),
-                        ],
-                      ),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: imageUrl.isEmpty ?Image.asset("assets/images/carpark.jpeg", height: 50,width: 50,fit: BoxFit.cover,) :
+                            Image.network(
+                              imageUrl,
+                              height: 50,
+                              width: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  "assets/images/carpark.jpeg",
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                        ),
+                        SizedBox(width: 15,),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(text: parkingName, fontWeight: FontWeight.w700, fontSize: 16, textColor: MyColors.grey_1),
+                            CustomText(text: address, fontWeight: FontWeight.w300, fontSize: 13.6, textColor: MyColors.grey_1),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
 
                   GestureDetector(
@@ -112,12 +114,12 @@ class CustomListWidget extends StatelessWidget {
                Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CustomText(text: "Distance", fontWeight: FontWeight.w300, fontSize: 12, textColor: MyColors.grey_3),
+                  const CustomText(text: "Distance", fontWeight: FontWeight.w300, fontSize: 12, textColor: MyColors.grey_3),
                   Row(
                     children: [
                       CustomText(text: distance,fontWeight: FontWeight.w600, fontSize: 16, textColor: MyColors.grey_1),
-                      SizedBox(width: 3,),
-                      CustomText(text: "KM",fontWeight: FontWeight.w600, fontSize: 16, textColor: MyColors.grey_1),
+                      const SizedBox(width: 3,),
+                      const CustomText(text: "KM",fontWeight: FontWeight.w600, fontSize: 16, textColor: MyColors.grey_1),
 
                     ],
                   ),

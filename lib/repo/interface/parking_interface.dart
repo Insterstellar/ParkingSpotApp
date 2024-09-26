@@ -7,5 +7,5 @@ import '../../models/SpotAvailable.dart';
 abstract class ParkingInterface{
    Future <List<Parking>> getAllParkingSpots ();
    Future <Parking> saveParkingSpots (Parking saveParking);
-   Future <SpotAvailable> bookSpot (int id , bool available );
+   Future <SpotAvailable> bookSpot (int userId,SpotAvailable spotAvailable);
 }

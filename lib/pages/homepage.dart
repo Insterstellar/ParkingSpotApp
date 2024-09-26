@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:parking/booking/my_bookings.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/pages/MainPage.dart';
-import 'package:parking/pages/booking_page.dart';
+import 'package:parking/pages/select_parking_spots.dart';
 import 'package:parking/pages/parking_details.dart';
 import 'package:parking/pages/payment_page.dart';
 import 'package:parking/pages/save_parking.dart';
@@ -35,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
     MainPage(),
      SaveParking(),
    // BookingPage(),
-   FavoritesPage(),
+   MyBooking(),
     PaymentPage()
    // ParkingDetails()
   ];
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.local_parking),
-              label: 'Save Parking',
+              label: 'Parking',
               backgroundColor: MyColors.primarylight0,
             ),
             BottomNavigationBarItem(

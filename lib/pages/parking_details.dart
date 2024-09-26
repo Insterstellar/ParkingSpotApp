@@ -2,17 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:parking/booking/mytetxwidget.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/models/Amenities.dart';
 import 'package:parking/models/Gallery.dart';
+import 'package:parking/models/SpotAvailable.dart';
 import 'package:parking/models/parking_model.dart';
-import 'package:parking/pages/booking_page.dart';
+import 'package:parking/pages/select_parking_spots.dart';
 import 'package:parking/repo/controller/parking_controller.dart';
 import 'package:parking/repo/services/ParkingServices.dart';
 import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_text.dart';
 import 'package:parking/widgets/review_list_widget.dart';
+
+import '../models/reveiw_parking.dart';
 
 class ParkingDetails extends StatefulWidget {
   final Parking? parkingDetails;
@@ -55,18 +59,44 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
   Parking? parkingapots;
   List<Amenities>? amenities;
   List<Gallery>? galleries;
+  List<ReviewParking> ?reviewParking;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     parkingapots=widget.parkingDetails;
-    amenityDetails ();
+
+    amenityGalleryDetails ();
 
   }
+  int numberOfSpotsAvialable =0;
+  int totalNumberOfSpots =0;
 
-  void amenityDetails (){
+  void amenityGalleryDetails (){
    amenities = parkingapots?.amenities;
    galleries = parkingapots?.gallery;
+   reviewParking=parkingapots?.reviewParking;
+   setState(() {
+    int? spots= parkingapots?.numberOfSpots;
+    List<SpotAvailable>? s =parkingapots?.spotAvailable;
+  // print("--------------------------------------------object1"+s![0].isOccupied.toString());
+
+      for(int a =0; a<s!.length; a++){
+
+       if(s[a].isOccupied==true){
+         setState(() {
+           numberOfSpotsAvialable++;
+         });
+
+
+       }
+  
+    }
+    if(spots !=null){
+      totalNumberOfSpots=spots;
+    }
+
+   });
   }
 
 
@@ -144,12 +174,14 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomText(text: parkingapots?.name??"", fontWeight: FontWeight.w600, fontSize: 25, textColor: MyColors.grey_10),
-                            CustomText(text: parkingapots?.location??"", fontWeight: FontWeight.w300, fontSize: 13, textColor: MyColors.grey_10),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(text: parkingapots?.name??"", fontWeight: FontWeight.w600, fontSize: 25, textColor: MyColors.grey_10),
+                              CustomText(text:  parkingapots?.location??"", fontWeight: FontWeight.w300, fontSize: 13, textColor: MyColors.grey_10),
+                            ],
+                          ),
                         ),
 
 
@@ -157,7 +189,7 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                     ),
                     SizedBox(height: 5,),
                     Container(
-                      width: 100,
+                      width: 120,
                       decoration: BoxDecoration(
                           color: MyColors.primarylight0,
                           borderRadius: BorderRadius.circular(50)),
@@ -165,10 +197,10 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                       child:  Row(
                         children: [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(10.0),
                             child: Icon(Icons.local_taxi_sharp, color: MyColors.primary6,size: 14,),
                           ),
-                          CustomText(text: "24 Slots", fontWeight: FontWeight.w900, fontSize: 12, textColor: MyColors.primary6),
+                          CustomText(text: numberOfSpotsAvialable.toString()+"/"+totalNumberOfSpots.toString()+" Spots", fontWeight: FontWeight.w900, fontSize: 12, textColor: MyColors.primary6),
                         ],
                       ),
                     ),
@@ -262,9 +294,9 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
 
                                 }),
                             ListView.builder(
-                                itemCount: 18,
+                                itemCount: reviewParking?.length ?? 0,
                                 itemBuilder: (context, index) {
-                                  return ReviewListWidget(usersnames: users[index],);
+                                  return ReviewListWidget(usersnames: reviewParking![index].userParkingName!.username.toString(),review: reviewParking![index].comment.toString(),stars: reviewParking![index].stars!,profileImage: reviewParking![index].userParkingName?.profileImage,);
                                 })
 
                             //
@@ -288,13 +320,8 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                     children: [
                       Expanded(
                         child: CustomButton(buttonText: "Schedule",onTap: (){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  BookingPage(parkingSpot:parkingapots ),
-                            ),
-                          );
+                          print("heree is what am talking about"+ reviewParking!.length.toString());
+
                         
                         },
                             btnColor: MyColors.grey_5, buttonTextColor: MyColors.primary1),
@@ -308,7 +335,7 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  BookingPage(parkingSpot:parkingapots ),
+                                  SelectParkingSPotsPage(parkingSpot:parkingapots ),
                             ),
                           );
                         
