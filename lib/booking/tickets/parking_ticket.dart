@@ -2,18 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:parking/models/SpotAvailable.dart';
+import 'package:parking/models/parkingHistory.dart';
 import 'package:parking/models/parking_model.dart';
 import 'package:parking/models/user_parking.dart';
+import 'package:parking/provider/show_directions_provider.dart';
+import 'package:parking/show_directions.dart';
 import 'package:parking/util/coordinates_to_Address.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../misc/mycolors/mycolors.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_text.dart';
+import '../../misc/mycolors/mycolors.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_text.dart';
 
 class ParkingTicket extends StatefulWidget {
   final UserParking userParking;
-  const ParkingTicket({super.key, required this.userParking});
+  final bool? accessDirection;
+  const ParkingTicket({super.key, required this.userParking,  this.accessDirection,  });
 
   @override
   State<ParkingTicket> createState() => _ParkingTicketState();
@@ -24,45 +29,69 @@ class _ParkingTicketState extends State<ParkingTicket> {
   @override
   void initState() {
     // TODO: implement initState
-    convertCoordinates();
+
+
+
     super.initState();
+    convertCoordinates();
+    toggleGetDirectionButtons();
+
   }
   String? location;
   UserParking? userParking;
-  SpotAvailable? spotAvailable;
+  ParkingHistory? parkingHistory;
   TimeOfDay? startTime;
   TimeOfDay? endTime;
   Parking? parking;
+  String? startDate;
+  bool accessDirection =true;
   //String? coordinates;
 
   Future<void> convertCoordinates() async {
     userParking = widget.userParking;
-    spotAvailable = userParking?.bookedSpot;
+    parkingHistory = userParking?.bookHistoryTemp;
+    startDate= "${parkingHistory?.startTime?.year}-${parkingHistory?.startTime?.month}-${parkingHistory?.startTime?.day}";
+
     startTime = TimeOfDay(
-        hour: spotAvailable!.startTime!.hour,
-        minute: spotAvailable!.startTime!.minute);
+        hour: parkingHistory!.startTime!.hour,
+        minute: parkingHistory!.startTime!.minute);
+
     endTime = TimeOfDay(
-        hour: spotAvailable!.endTime!.hour,
-        minute: spotAvailable!.endTime!.minute);
-    parking = spotAvailable?.parking;
+        hour: parkingHistory!.endTime!.hour,
+        minute: parkingHistory!.endTime!.minute);
+
+       String ? historyLocation = parkingHistory?.location;
 
 
-    if(parking?.location is String){
-      location=parking?.location;}
-    else{
-      String? coordinates = parking?.location;
-      if (coordinates!.isNotEmpty) {
-           AddressConverter addressConverter = AddressConverter();
-        setState(() async {
-          location = await addressConverter.coordinatesToAddres(coordinates!);
-        });
+          if(historyLocation!=null){
+            AddressConverter addressConverter = AddressConverter();
+
+              location = await addressConverter.coordinatesToAddres(historyLocation!);
+               setState(()  {
+            });
+          }
 
         //print("here is the parking of al+++l times now"+location.toString());
-      }
-    }
 
 
 
+
+
+
+  }
+
+  void toggleGetDirectionButtons(){
+   bool? direction =widget.accessDirection;
+   setState(() {
+   if(direction!=null){
+     accessDirection =widget.accessDirection!;
+
+   }else{
+     accessDirection=true;
+   }
+
+
+    });
 
   }
 
@@ -180,7 +209,7 @@ class _ParkingTicketState extends State<ParkingTicket> {
                                 fontSize: 14,
                                 textColor: MyColors.grey_20),
                             CustomText(
-                                text: spotAvailable!.duration.toString(),
+                                text: parkingHistory!.duration.toString(),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                                 textColor: MyColors.grey_20),
@@ -195,7 +224,7 @@ class _ParkingTicketState extends State<ParkingTicket> {
                                 fontSize: 14,
                                 textColor: MyColors.grey_20),
                             CustomText(
-                                text: TimeOfDay.now().toString(),
+                                text:  startDate ?? "",
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                                 textColor: MyColors.grey_20),
@@ -235,18 +264,23 @@ class _ParkingTicketState extends State<ParkingTicket> {
             SizedBox(
               height: 20,
             ),
+
+            accessDirection?
             CustomButton(
               buttonText: "Get direction",
               onTap: () {
-                print("Open Map");
-                String? startime = parking?.location.toString();
-                //String endtime = spotAvailable.endTime.toString();
-                print("this is the actual time please-------------" + startime!);
-                //print("this is the actual endtime please---------" + endtime);
+
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>ShowDirections(userParking: userParking )));
+
+
+
+
+
+
               },
               buttonTextColor: MyColors.primary1,
               btnColor: MyColors.primary6,
-            )
+            ) :Container()
           ],
         ),
       ),

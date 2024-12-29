@@ -320,7 +320,10 @@ class _ParkingDetailsState extends State<ParkingDetails> with TickerProviderStat
                     children: [
                       Expanded(
                         child: CustomButton(buttonText: "Schedule",onTap: (){
-                          print("heree is what am talking about"+ reviewParking!.length.toString());
+                          bool toggleCalender = true;
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                              SelectParkingSPotsPage(parkingSpot:parkingapots, toggleCalender:  toggleCalender)
+                          ),);
 
                         
                         },

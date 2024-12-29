@@ -78,8 +78,8 @@ class BookingCustomList extends StatelessWidget {
                             borderRadius: BorderRadius.only( bottomRight: Radius.circular(8)),
                             color: MyColors.primary6,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Center(child: CustomText(text: "View Ticket", fontWeight: FontWeight.w600, fontSize: 16, textColor: MyColors.primary1)),
                           )),
                     ),

@@ -6,6 +6,7 @@ class SpotAvailable {
   bool? isOccupied;
   int? duration;
   double? totalPrice;
+  DateTime? startDate;
   DateTime? startTime;
   DateTime? endTime;
   String? remainingTime;
@@ -18,6 +19,7 @@ class SpotAvailable {
         this.isOccupied,
         this.duration,
         this.totalPrice,
+        this.startDate,
         this.startTime,
         this.endTime,
         this.remainingTime,
@@ -30,6 +32,7 @@ class SpotAvailable {
     duration = json['duration'];
     totalPrice = json['totalPrice'];
     remainingTime = json['remainingTime'] ;
+    startDate = json['startDate']!= null ? DateTime.parse(json['startDate']) : null;
     startTime = json['startTime']!= null ? DateTime.parse(json['startTime']) : null;
     endTime = json['endTime']!= null ? DateTime.parse(json['endTime']) : null;
     parking = json['parking'] != null ? Parking.fromJson(json['parking']) : null;
@@ -42,8 +45,9 @@ class SpotAvailable {
     data['is_occupied'] = this.isOccupied;
     data['duration'] = this.duration;
     data['totalPrice'] = this.totalPrice;
+    data['startDate'] = this.startTime?.toIso8601String();
     data['startTime'] = this.startTime?.toIso8601String();
-    data['endTime'] = this.endTime?.toIso8601String();
+    data['endTime']   = this.endTime?.toIso8601String();
     if (this.parking != null) {
       data['parking'] = this.parking!.toJson();
     }

@@ -13,4 +13,18 @@ class AddressConverter {
         "${first.street}, ${first.postalCode} ${first.subAdministrativeArea}";
     return location;
   }
+
+
+
+  Future<String> addressToCoordinatess(String? location)async{
+    String locationCoordinates="";
+
+    List<Location> locations = await locationFromAddress(location!);
+    double latitude =locations.first.latitude;
+    double longitude =locations.first.longitude;
+    locationCoordinates  ="$latitude,$longitude";
+
+
+    return locationCoordinates;
+  }
 }

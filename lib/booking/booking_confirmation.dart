@@ -3,13 +3,20 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
 import 'package:parking/dialog/payment_confirmed_dialogue.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
+import 'package:parking/models/ProductRequest.dart';
 import 'package:parking/models/SpotAvailable.dart';
+import 'package:parking/models/stripe_response.dart';
+import 'package:parking/repo/controller/stripe_controller.dart';
+import 'package:parking/repo/services/product_request_service.dart';
 import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../models/PaymentIntentSheet.dart';
 import '../models/parking_model.dart';
 import '../repo/controller/parking_controller.dart';
 import '../repo/services/ParkingServices.dart';
@@ -28,12 +35,29 @@ class BookingConfirmation extends StatefulWidget {
   State<BookingConfirmation> createState() => _BookingConfirmationState();
 }
 
+
+
+var stripeController = StripeController(ProductRequestService());
+
 class _BookingConfirmationState extends State<BookingConfirmation> {
 
   var updateSpotController = ParkingController(ParkingServices());
   int userId=1;
+
+  Future<void> openBrowser(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+
+
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+
     int? parkingSpotId                =widget.parkingSpotId;
     Parking? parking                  =widget.parking;
     TimeOfDay? selectedStartTime      =widget.selectedStartTime;
@@ -191,7 +215,7 @@ class _BookingConfirmationState extends State<BookingConfirmation> {
 
               SizedBox(height: 25,),
 
-              CustomButton(buttonText: "Confirm Payment", onTap: (){
+              CustomButton(buttonText: "Confirm Payment", onTap: () async{
                 //parkingSpotId: parkingSpotId,
                 //parking: parking,
                 //selectedEndTime: selectedEndTime,
@@ -203,7 +227,7 @@ class _BookingConfirmationState extends State<BookingConfirmation> {
 
 
 
-                showDialog(context: context,builder: (_) => BookingConfirmationDialog() );
+                //showDialog(context: context,builder: (_) => BookingConfirmationDialog() );
 
                 DateTime startDateTime= DateTime(currentDate!.year,currentDate!.month, currentDate!.day,selectedStartTime.hour,selectedStartTime.minute);
                  DateTime endDateTime= DateTime(currentDate!.year,currentDate!.month, currentDate!.day,selectedEndTime.hour,selectedEndTime.minute);
@@ -211,7 +235,7 @@ class _BookingConfirmationState extends State<BookingConfirmation> {
                String formattedEndDate = DateFormat('yyyy-MM-ddTHH:mm:ss').format(endDateTime);
 
 
-               
+
                 SpotAvailable spotAvailable = SpotAvailable();
                 spotAvailable.id=parkingSpotId;
                 spotAvailable.isOccupied=false;
@@ -223,11 +247,52 @@ class _BookingConfirmationState extends State<BookingConfirmation> {
                spotAvailable.startTime=startDateTime;
                spotAvailable.endTime=endDateTime;
 
-               updateSpotController.updateParkingSpot(userId, spotAvailable);
+             // updateSpotController.updateParkingSpot(userId, spotAvailable);
+               ProductRequest productService = ProductRequest();
+               productService.name= parking.name;
+               productService.amount=1000;
+               productService.currency="US";
+               productService.quantity=1;
+Stripe.publishableKey="pk_test_51NC6uKA24EkNE4sIYoQSSzpjdZrKABXWwuNfjZSjig4jYZzLskgrZB6dtYJOvW8xAOQZ0Dq1YFJWtfDy5liKdvYN00C3ka6fFv";
+                PaymentIntentSheet stripeResponse = await stripeController.stripeResponse(productService);
+                print("here is the ephemeral code --- :"+ stripeResponse.publishableKey.toString());
+
+                try {
+                  await Stripe.instance.initPaymentSheet(
+                    paymentSheetParameters: SetupPaymentSheetParameters(
+                      // Set to true for custom flow
+                      customFlow: false,
+                      // Main params
+                      merchantDisplayName: 'Test Merchant',
+                      paymentIntentClientSecret: stripeResponse.paymentIntent,
+                      // Customer keys
+                      customerEphemeralKeySecret: stripeResponse.ephemeralKey,
+                      customerId: stripeResponse.customer,
+
+                      style: ThemeMode.dark,
+                    ),
+
+                  );
+                }catch(e){
+                  print("first something went wrong with the payment---"+e.toString());
+                }
 
 
 
-                print("the current date time--------------------"+jsonEncode(spotAvailable.toJson().toString()));
+               try {
+                 await Stripe.instance.presentPaymentSheet();
+               }catch(e){
+                 print("something went wrong with the payment---"+e.toString());
+
+               }
+
+
+               // final url = Uri.parse(stripeResponse.sessionUrl.toString());
+             //  openBrowser(stripeResponse.sessionUrl!);
+
+
+
+               // print("the current date time--------------------"+jsonEncode(spotAvailable.toJson().toString()));
                 //print("the current date time--------------------"+spotAvailable.parking!.location.toString());
 
 

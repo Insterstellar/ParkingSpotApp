@@ -1,4 +1,5 @@
 import 'package:parking/models/SpotAvailable.dart';
+import 'package:parking/models/parkingHistory.dart';
 import 'package:parking/models/parking_model.dart';
 
 class UserParking {
@@ -8,6 +9,8 @@ class UserParking {
   List<Parking>? parkingFavorites;
   List<SpotAvailable>? reservedParking;
   SpotAvailable ? bookedSpot;
+  List<ParkingHistory>? bookHistory;
+  ParkingHistory? bookHistoryTemp;
   bool? added;
 
 
@@ -18,6 +21,8 @@ class UserParking {
         this.profileImage,
         this.reservedParking,
         this.bookedSpot,
+        this. bookHistory,
+        this.bookHistoryTemp,
         this.added});
 
   UserParking.fromJson(Map<String, dynamic> json) {
@@ -40,6 +45,13 @@ class UserParking {
     bookedSpot = json['bookedSpot'] != null
         ?  SpotAvailable.fromJson(json['bookedSpot'])
         : null;
+
+    if (json['bookHistory'] != null) {
+      bookHistory = <ParkingHistory>[];
+      json['bookHistory'].forEach((v) {
+        bookHistory!.add(ParkingHistory.fromJson(v));
+      });
+    }
     added = json['added'];
   }
 

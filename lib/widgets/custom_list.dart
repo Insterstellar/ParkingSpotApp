@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_text.dart';
@@ -18,7 +19,7 @@ class CustomListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      //height: 150,
       margin: EdgeInsets.only(bottom: 14),
 
       decoration: BoxDecoration(
@@ -61,12 +62,14 @@ class CustomListWidget extends StatelessWidget {
                             ),
                         ),
                         SizedBox(width: 15,),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomText(text: parkingName, fontWeight: FontWeight.w700, fontSize: 16, textColor: MyColors.grey_1),
-                            CustomText(text: address, fontWeight: FontWeight.w300, fontSize: 13.6, textColor: MyColors.grey_1),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(text: parkingName, fontWeight: FontWeight.w700, fontSize: 16, textColor: MyColors.grey_1),
+                              CustomText(text: address, fontWeight: FontWeight.w300, fontSize: 13.6, textColor: MyColors.grey_1),
+                            ],
+                          ),
                         ),
                       ],
                     ),

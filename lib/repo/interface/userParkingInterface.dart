@@ -12,4 +12,5 @@ abstract class UserParkingInterface {
   Future <void> extendParkingTime(int userId, SpotAvailable extendTime );
   Future <UserParking> allReservedSPots(int userId);
   Future<void> addReview(ReviewParking reviewParking, int userId , int parkingId);
+  Future<UserParking> allHistory(int userId);
 }

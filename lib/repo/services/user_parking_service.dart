@@ -137,5 +137,23 @@ class UserParkingService implements UserParkingInterface {
 
   }
 
+  @override
+  Future<UserParking> allHistory(int userId) async {
+    UserParking history = UserParking();
+    var url = Uri.parse("${Urls.baseUrl + Urls.apiV}user/history/$userId");
+    var response = await http.get(url);
+    if(response.statusCode==200){
+     var body = json.decode(response.body) ;
+     history= UserParking.fromJson(body);
+
+     return history;
+
+    }
+    else {
+    }       throw UnimplementedError();
+
+
+  }
+
 
 }

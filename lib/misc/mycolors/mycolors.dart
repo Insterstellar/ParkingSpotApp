@@ -11,7 +11,7 @@ class MyColors{
   static const Color primary6_light = Color(0xFF1f352d);
   static const Color primary6_light1 = Color(0xff3e6254);
 
-  //transparent colors
+
   static const Color transparentprimary1 = Color(0xEF121620);
   static const Color transparentprimary2 = Color(0x41121620);
 
@@ -27,6 +27,8 @@ class MyColors{
   static const Color grey_90 = Color(0xFF263238);
   static const Color grey_95 = Color(0xFF1a1a1a);
   static const Color grey_100_ = Color(0xFF0d0d0d);
+  static const Color yellow_1_ = Color(0xFFe8bcb9);
+  static const Color yellow_100_ = Color(0xFFF39F5A);
 
 
   static const Color primaryColor = Color(0xFF006491);

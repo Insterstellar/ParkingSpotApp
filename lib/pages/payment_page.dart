@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map_math/flutter_geo_math.dart';
+import 'package:parking/booking/old/old.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
+import 'package:parking/regestration/SignUp/driver_information.dart';
 import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_text.dart';
+import 'package:parking/widgets/vehicle_info.dart';
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({super.key});
@@ -9,6 +13,8 @@ class PaymentPage extends StatefulWidget {
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
+
+
 
 class _PaymentPageState extends State<PaymentPage> {
   @override
@@ -206,7 +212,10 @@ class _PaymentPageState extends State<PaymentPage> {
             SizedBox(height: 30,),
 
 
-            CustomButton(buttonText: "Continue", onTap: (){}, buttonTextColor: MyColors.primary1,btnColor: MyColors.primary6,),
+            CustomButton(buttonText: "Continue", onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>DriverInformation()));
+
+            }, buttonTextColor: MyColors.primary1,btnColor: MyColors.primary6,),
 
 
 

@@ -39,4 +39,8 @@ class UserParkingController {
   Future<void> addReview(ReviewParking reviewParking, int userId , int parkingId ) async{
     return await userParkingService.addReview(reviewParking, userId, parkingId);
   }
+
+  Future<UserParking> allHistory(int userId) {
+    return userParkingService.allHistory(userId);
+  }
 }

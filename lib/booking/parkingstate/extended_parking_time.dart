@@ -240,7 +240,12 @@ class _ExtendParkingTimeState extends State<ExtendParkingTime> {
 
               }else{
 
-                print("Time cannot be lesser than the initial time");
+                const snackBar = SnackBar(
+                  content: Text('Selected time is less than current time! '),
+
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
 
 

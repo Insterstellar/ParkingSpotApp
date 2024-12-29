@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parking/models/parking_model.dart';
 import 'package:parking/repo/services/ParkingServices.dart';
 
@@ -17,4 +18,9 @@ class ParkingController {
     await _parkingServices.bookSpot(userId,spotAvailable);
 
   }
+
+  Future<List<Map<String, dynamic>>> getPublicSpots(LatLng latLng){
+    return _parkingServices.getPublicSpots(latLng);
+  }
+
 }

@@ -7,7 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
-import 'package:parking/booking/parking_ticket.dart';
+import 'package:parking/booking/tickets/active_ticket.dart';
+import 'package:parking/booking/tickets/parking_ticket.dart';
 import 'package:parking/booking/parkingstate/parking_time_status.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/models/SpotAvailable.dart';
@@ -20,6 +21,8 @@ import 'package:parking/util/coordinates_to_address.dart';
 import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_text.dart';
 
+import '../models/parkingHistory.dart';
+import '../widgets/drawer_widget.dart';
 import 'customBookingWidgets/booking_custom_list.dart';
 
 class MyBooking extends StatefulWidget {
@@ -32,13 +35,29 @@ class MyBooking extends StatefulWidget {
 class _MyBookingState extends State<MyBooking> with TickerProviderStateMixin {
   late TextEditingController _controller;
  int userId =1;
- int parkingId=1;
+
+  String? location;
+  Parking? parking;
+  List<SpotAvailable>? reservedSpot=[];
+  Parking? park;
+  String? streetAddress;
+  UserParking reservedSpots =UserParking();
+  List<Parking> parkSPot =[];
+  List<ParkingHistory> allHistoryList= [];
+  List<String> allParkingHistoryList= [];
+  String? historyAddress;
+  UserParking activeParking = UserParking();
+  UserParking userParkingHistory = UserParking();
+
+  //String date;
+
 
   @override
   void initState() {
     super.initState();
     activeSpotDetails();
     reservedParkingSpot();
+    allHistory();
     _controller = TextEditingController();
 
   }
@@ -135,7 +154,7 @@ class _MyBookingState extends State<MyBooking> with TickerProviderStateMixin {
     }, backgroundColor: MyColors.grey_10);
   }
 var addReviewController = UserParkingController(UserParkingService());
-  void _showReviewSheet() {
+  void _showReviewSheet(int? parkingId) {
     scaffoldState.currentState?.showBottomSheet(
       (context) => Container(
         height: 350,
@@ -217,9 +236,8 @@ var addReviewController = UserParkingController(UserParkingService());
                       reviewParking.stars=2;
                       reviewParking.comment=_controller.value.text.toString();
 
-                     // print("this is what am typing now "+reviewParking.comment.toString());
 
-                      addReviewController.addReview(reviewParking, userId, parkingId);
+                      addReviewController.addReview(reviewParking, userId, parkingId!);
                       Navigator.pop(context);
 
                     },
@@ -236,22 +254,12 @@ var addReviewController = UserParkingController(UserParkingService());
     );
   }
 
-  int userid = 1;
-  String? location;
-  Parking? parking;
-  //String date;
 
 
-
-
-
-
-
-  UserParking activeParking = UserParking();
 
   Future<void> activeSpotDetails() async {
     var activeSpotController = UserParkingController(UserParkingService());
-    var active_spot = await activeSpotController.activeSpot(userid);
+    var active_spot = await activeSpotController.activeSpot(userId);
     activeParking = active_spot;
     parking = activeParking.bookedSpot?.parking;
     String? coordinates = parking?.location;
@@ -266,24 +274,16 @@ var addReviewController = UserParkingController(UserParkingService());
 
 
   }
-  List<SpotAvailable>? reservedSpot=[];
-  Parking? park;
-  String? streetAddress;
-  UserParking reservedSpots =UserParking();
-List<Parking> parkSPot =[];
-
   Future<void> reservedParkingSpot() async{
     var reservedController = UserParkingController(UserParkingService());
-     reservedSpots = await reservedController.reservedSpots(userid);
+     reservedSpots = await reservedController.reservedSpots(userId);
      setState(() {
 
      });
     reservedSpot = reservedSpots.reservedParking;
     for(int a =0; a<reservedSpot!.length ; a++){
 
-
             park =reservedSpot?[a].parking;
-
 
             String? coordinatess =  park?.location;
         AddressConverter addressConverter = AddressConverter();
@@ -304,31 +304,57 @@ List<Parking> parkSPot =[];
 
 
   }
+  Future<void> allHistory ()async{
+    var historyController = UserParkingController(UserParkingService());
+    userParkingHistory =await  historyController.allHistory(userId);
+    allHistoryList = userParkingHistory.bookHistory!;
+    for(ParkingHistory model in  allHistoryList){
+      //Parking? parkingDetails = model.parking;
+      String? location = model?.location;
+       AddressConverter addressConverter = AddressConverter();
+       String parkingDetails = await addressConverter.coordinatesToAddres(location!);
+        allParkingHistoryList.add(parkingDetails!);
+
+    }
 
 
+  }
 
 
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     TabController tabController = TabController(length: 3, vsync: this);
     return Scaffold(
+      drawer:   Drawer(
+        key: scaffoldKey ,
+        backgroundColor: MyColors.primary1,
+
+        child: DrawerWidget(),
+      ),
       appBar: AppBar(
         backgroundColor: MyColors.primary1,
-        title: CustomText(
+       foregroundColor: MyColors.grey_20,
+
+        title: const CustomText(
             text: "My Booking",
             fontWeight: FontWeight.w600,
             fontSize: 16,
             textColor: MyColors.grey_20),
-        leading: IconButton(
+
+
+       /* leading: IconButton(
+
           icon: Icon(
-            Icons.chevron_left,
+            Icons.menu_rounded,
             color: MyColors.grey_20,
           ),
           onPressed: () {
-            Navigator.pop(context);
+            //Navigator.pop(context);
+            scaffoldKey.currentState?.openDrawer();
           },
-        ),
+        ),*/
       ),
       key: scaffoldState,
       backgroundColor: MyColors.primary1,
@@ -394,6 +420,9 @@ List<Parking> parkSPot =[];
                           price: parking?.price,
                           viewTimer: "View Timer",
                           onTap: () {
+                            activeParking.bookedSpot?.parking?.location=location;
+
+
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return ParkingStatusTime(
@@ -402,12 +431,18 @@ List<Parking> parkSPot =[];
                             }));
                           },
                           viewTicket: () {
+                            activeParking.bookedSpot?.parking?.location=location;
+
+
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => ParkingTicket(
-                                          userParking: activeParking,
+                                    builder: (context) => ActiveTicket(
+                                          userParking:  activeParking,
                                         )));
+
+
+
                           }),
 
                       //------------reserved page----------//
@@ -443,18 +478,32 @@ List<Parking> parkSPot =[];
                         }
                     ),
 
-                  ListView(
-                    children: [
-                      BookingCustomList(
-                        viewTimer: "Rate",
-                        onTap: () {
-                          _showReviewSheet();
-                        },
-                        viewTicket: () {
-                          print("review ticket");
-                        },
-                      ),
-                    ],
+                  ListView.builder(
+                    itemCount: allHistoryList.length,
+                      itemBuilder: (context, index) {
+                     String locationList = allParkingHistoryList[index];
+                     ParkingHistory historyList = allHistoryList[index];
+                      return
+                          BookingCustomList(
+                            viewTimer: "Rate", stationName: historyList.parkingName,streetName:locationList,price: historyList.price,
+                            onTap: () {
+                           //  _showReviewSheet(parkingHistory.id);
+                            },
+                            viewTicket: () {
+                            // allHistoryList[index].parking=parkingHistory;
+                             ParkingHistory parkingHistory = allHistoryList[index];
+                              UserParking userParkingTicket = UserParking();
+                              userParkingTicket.username=userParkingHistory.username;
+                              userParkingTicket.bookHistoryTemp= parkingHistory;
+
+
+                             Navigator.push(context, MaterialPageRoute(builder: (context)=>ParkingTicket(userParking: userParkingTicket,accessDirection: false,) ));
+
+
+                            },
+
+                      );
+                    }
                   ), //tab bar
                 ]),
               ),

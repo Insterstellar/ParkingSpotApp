@@ -1,23 +1,28 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parking/booking/my_bookings.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
-import 'package:parking/pages/MainPage.dart';
+import 'package:parking/pages/MainMapPage.dart';
 import 'package:parking/pages/select_parking_spots.dart';
 import 'package:parking/pages/parking_details.dart';
 import 'package:parking/pages/payment_page.dart';
-import 'package:parking/pages/save_parking.dart';
+import 'package:parking/pages/parking_places.dart';
 import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_list.dart';
 import 'package:parking/widgets/custom_text.dart';
 
-import 'favorites_page.dart';
-
+import '../data/no_items_available.dart';
+import '../widgets/drawer_widget.dart';
+import 'drawerPages/favorites_page.dart';
+final GlobalKey<_MyHomePageState> bottomNavigationKey = GlobalKey();
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  MyHomePage({Key? key}) : super(key: bottomNavigationKey); // Assign GlobalKey here
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -25,21 +30,41 @@ class MyHomePage extends StatefulWidget {
 
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex =0;
-  void _onItemTapped(int index) {
+  int selectedIndexPage =0 ;
+  int?  drawerIndex;
+
+  void onItemTapped(int index) async {
     setState(() {
-      _selectedIndex = index;
+      selectedIndexPage = index;
+
+
+     // drawerKey.currentState?.onTappedDrawerItem(null);
+
+
     });
+
+
   }
 
+
+
+
   List<Widget> _pages=[
-    MainPage(),
+   MainPage(),
      SaveParking(),
-   // BookingPage(),
-   MyBooking(),
-    PaymentPage()
+   //BookingPage(),
+  MyBooking(),
+    PaymentPage(),
+    NoItemsFoundPage(),
+
    // ParkingDetails()
   ];
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -50,8 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
          // backgroundColor: MyColors.primarylight,
           selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
           elevation: 0,
-         currentIndex: _selectedIndex, //New
-          onTap: _onItemTapped,
+         currentIndex: selectedIndexPage, //New
+          onTap: onItemTapped,
 
           type: BottomNavigationBarType.shifting,
           items: const <BottomNavigationBarItem>[
@@ -81,10 +106,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
 
+
+
       body:   SafeArea(
-        child: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
+        child: IndexedStack (
+          index:  selectedIndexPage ,
+          children:  _pages,  // drawer pages to be implemented here also
         ),
       )
     );

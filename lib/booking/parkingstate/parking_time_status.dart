@@ -6,6 +6,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
 import 'package:parking/models/SpotAvailable.dart';
 import 'package:parking/models/user_parking.dart';
+import 'package:parking/util/coordinates_to_Address.dart';
 import 'package:parking/widgets/custom_button.dart';
 
 import '../../repo/controller/user_parking_controller.dart';
@@ -26,7 +27,7 @@ class _ParkingStatusTimeState extends State<ParkingStatusTime> {
   SpotAvailable spotAvailable = SpotAvailable();
   TimeOfDay? startTime;
   TimeOfDay? endTime;
-  String? locationConcatenation;
+  String? convertedLocation;
   //Duration duration= Duration(hours:2 ,minutes:00,seconds: 00);
   final remainingTimeController = StreamController<Duration>.broadcast();
   StreamSink<Duration> get sinkRemainingTime => remainingTimeController.sink;
@@ -37,6 +38,7 @@ class _ParkingStatusTimeState extends State<ParkingStatusTime> {
   // String secondsStr = "";
   int userid = 1;
   Timer? timer;
+  String? startDate;
 
   @override
   void initState() {
@@ -51,6 +53,7 @@ class _ParkingStatusTimeState extends State<ParkingStatusTime> {
   void parkingTime() async {
     userParking = widget.userParking;
     spotAvailable = userParking.bookedSpot!;
+    startDate= "${spotAvailable?.startTime?.year}-${spotAvailable?.startTime?.month}-${spotAvailable?.startTime?.day}";
 
     startTime = TimeOfDay(
         hour: spotAvailable.startTime!.hour,
@@ -61,17 +64,11 @@ class _ParkingStatusTimeState extends State<ParkingStatusTime> {
 
     String? location = userParking.bookedSpot?.parking?.location;
     if (location != null) {
-      List<String> coordinates = location.split(',');
-      double latitude = double.parse(coordinates[0].trim());
-      double longitude = double.parse(coordinates[1].trim());
-      List<Placemark> placeMark =
-          await placemarkFromCoordinates(latitude, longitude);
 
-      if (placeMark.isNotEmpty) {
-        var address = placeMark.first;
+      convertedLocation=  location;
+
+      if (convertedLocation!=null) {
         setState(() {
-          locationConcatenation =
-              "${address.street} ${address.postalCode}, ${address.subAdministrativeArea}";
         });
       }
     }
@@ -260,7 +257,7 @@ class _ParkingStatusTimeState extends State<ParkingStatusTime> {
                                   fontSize: 14,
                                   textColor: MyColors.grey_20),
                               CustomText(
-                                  text: locationConcatenation ?? "",
+                                  text: convertedLocation ?? "",
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                   textColor: MyColors.grey_20),
@@ -297,7 +294,7 @@ class _ParkingStatusTimeState extends State<ParkingStatusTime> {
                                   textColor: MyColors.grey_20),
                             ],
                           ),
-                          const Column(
+                         Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               CustomText(
@@ -306,7 +303,7 @@ class _ParkingStatusTimeState extends State<ParkingStatusTime> {
                                   fontSize: 14,
                                   textColor: MyColors.grey_20),
                               CustomText(
-                                  text: "2/12/2024",
+                                  text: startDate ?? "",
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                   textColor: MyColors.grey_20),

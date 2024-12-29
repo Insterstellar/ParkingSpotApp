@@ -12,8 +12,9 @@ import 'package:parking/widgets/custom_text.dart';
 class SetTimePage extends StatefulWidget {
   final int? parkingSpotId;
   final Parking? parking;
+  final bool? toggleCalender;
   const SetTimePage(
-      {super.key, required this.parkingSpotId, required this.parking});
+      {super.key, required this.parkingSpotId, required this.parking, this.toggleCalender});
 
   @override
   State<SetTimePage> createState() => _SetTimePageState();
@@ -27,8 +28,33 @@ class _SetTimePageState extends State<SetTimePage> {
 
   DateTime currentDate = DateTime.now();
   double price = 0;
+  bool toggleCalender =false;
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    showCalender();
+
+  }
+
+  void showCalender (){
+  bool? calender = widget.toggleCalender;
+  setState(() {
+    if(calender !=null){
+    toggleCalender = true;
+    }else{
+      toggleCalender = false;
+
+    }
+  });
+
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
     int? parkingSpotId = widget.parkingSpotId;
 
     Parking? parking = widget.parking;
@@ -49,7 +75,7 @@ class _SetTimePageState extends State<SetTimePage> {
       ),
       body: ListView(
         children: [
-          Padding(
+          toggleCalender ? Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +104,7 @@ class _SetTimePageState extends State<SetTimePage> {
                 ),
               ],
             ),
-          ),
+          ) : Container(),
           Container(height: 1, color: MyColors.grey_20),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -276,7 +302,7 @@ class _SetTimePageState extends State<SetTimePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CustomText(
+                    const CustomText(
                         text: "Price",
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -317,11 +343,8 @@ class _SetTimePageState extends State<SetTimePage> {
               child: CustomButton(
                 buttonText: "C o n t i n u e",
                 onTap: () {
-
-
-
-
-                  if(selectedEndTime != selectedStartTime && price>0){
+                  if(selectedEndTime != selectedStartTime && price>0.0 && duration >0){
+                    print("the price is "+ totalPrice.toString());
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -336,7 +359,7 @@ class _SetTimePageState extends State<SetTimePage> {
                             )));
                   }else{
                     const snackBar = SnackBar(
-                      content: Text('Oops .Set time in Hours! '),
+                      content: Text('Oops .Time is less than 0! '),
 
                     );
 
