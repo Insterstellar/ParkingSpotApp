@@ -3,7 +3,9 @@
 ParkNå . A mobile parking application (built with dart/flutter) designed to help users search, view, manage, and create parking spaces in their area. The application utilizes various libraries and frameworks to deliver a seamless user experience. The project follows the principles of Clean Architecture, which emphasizes separation of concerns, making the codebase more maintainable, testable, and scalable.
 
 # Sample Previews
-![807](https://github.com/user-attachments/assets/c88b7d0d-3cce-462f-9d80-e2d1f2cba560)
-![Image](https://github.com/user-attachments/assets/909e88de-e854-488d-98ed-7f54a6a22a48)
 ![mocks](https://github.com/user-attachments/assets/047286e7-fde2-49d0-ad26-7bdcca6ab621)
+![Image](https://github.com/user-attachments/assets/909e88de-e854-488d-98ed-7f54a6a22a48)
+![807](https://github.com/user-attachments/assets/c88b7d0d-3cce-462f-9d80-e2d1f2cba560)
+
+
 
