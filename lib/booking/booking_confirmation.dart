@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:parking/dialog/payment_confirmed_dialogue.dart';
 import 'package:parking/misc/mycolors/mycolors.dart';
@@ -18,6 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/PaymentIntentSheet.dart';
 import '../models/parking_model.dart';
+import '../payments/stripe/.env.publishablekey.dart';
 import '../repo/controller/parking_controller.dart';
 import '../repo/services/ParkingServices.dart';
 
@@ -43,6 +45,8 @@ class _BookingConfirmationState extends State<BookingConfirmation> {
 
   var updateSpotController = ParkingController(ParkingServices());
   int userId=1;
+
+
 
   Future<void> openBrowser(String urlString) async {
     final Uri url = Uri.parse(urlString);
@@ -227,7 +231,7 @@ class _BookingConfirmationState extends State<BookingConfirmation> {
 
 
 
-                //showDialog(context: context,builder: (_) => BookingConfirmationDialog() );
+
 
                 DateTime startDateTime= DateTime(currentDate!.year,currentDate!.month, currentDate!.day,selectedStartTime.hour,selectedStartTime.minute);
                  DateTime endDateTime= DateTime(currentDate!.year,currentDate!.month, currentDate!.day,selectedEndTime.hour,selectedEndTime.minute);
@@ -253,36 +257,71 @@ class _BookingConfirmationState extends State<BookingConfirmation> {
                productService.amount=1000;
                productService.currency="US";
                productService.quantity=1;
-Stripe.publishableKey="pk_test_51NC6uKA24EkNE4sIYoQSSzpjdZrKABXWwuNfjZSjig4jYZzLskgrZB6dtYJOvW8xAOQZ0Dq1YFJWtfDy5liKdvYN00C3ka6fFv";
+
                 PaymentIntentSheet stripeResponse = await stripeController.stripeResponse(productService);
                 print("here is the ephemeral code --- :"+ stripeResponse.publishableKey.toString());
+
 
                 try {
                   await Stripe.instance.initPaymentSheet(
                     paymentSheetParameters: SetupPaymentSheetParameters(
                       // Set to true for custom flow
-                      customFlow: false,
+                     // customFlow: false,
                       // Main params
                       merchantDisplayName: 'Test Merchant',
                       paymentIntentClientSecret: stripeResponse.paymentIntent,
+                      preferredNetworks: [CardBrand.Mastercard,CardBrand.Visa, ],
+                     
                       // Customer keys
-                      customerEphemeralKeySecret: stripeResponse.ephemeralKey,
-                      customerId: stripeResponse.customer,
+                     customerEphemeralKeySecret: stripeResponse.ephemeralKey,
+                    customerId: stripeResponse.customer,
+                      primaryButtonLabel: 'Pay //now',
 
-                      style: ThemeMode.dark,
+
+                    style: ThemeMode.system,
                     ),
 
                   );
                 }catch(e){
-                  print("first something went wrong with the payment---"+e.toString());
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                  rethrow;
+
                 }
 
 
 
                try {
-                 await Stripe.instance.presentPaymentSheet();
+                await Stripe.instance.presentPaymentSheet();
+                showDialog(context: context,builder: (_) => BookingConfirmationDialog() );
+                setState(() {
+                  // Trigger a rebuild to ensure UI restores its original state
+                });
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(
+                  content: Text(
+                    "Payment Done ",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.green,
+                ));
+         
+             
+
+
+
+
                }catch(e){
-                 print("something went wrong with the payment---"+e.toString());
+                 print("payment sheet failed--------------"+e.toString());
+                 ScaffoldMessenger.of(context)
+                     .showSnackBar(SnackBar(
+                   content: Text(
+                     "Payment Failed",
+                     style: TextStyle(color: Colors.white),
+                   ),
+                   backgroundColor: Colors.redAccent,
+                 ));
 
                }
 

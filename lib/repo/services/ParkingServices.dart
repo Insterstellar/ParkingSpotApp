@@ -65,7 +65,7 @@ class ParkingServices with ChangeNotifier implements ParkingInterface {
 
   @override
   Future<List<Map<String, dynamic>>> getPublicSpots(LatLng latLng) async {
-    https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=60.38967507959564, 5.33736912404336&radius=500&type=parking&key=AIzaSyDhuxiHyCdAvymvuIneXgC7V1eKwsNTWMw
+    https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=60.38967507959564, 5.33736912404336&radius=500&type=parking&key=apikey
     var url = Uri.parse("${Urls.googleMapAPi}=${latLng.latitude},${latLng.longitude}&radius=500&type=parking&key=${Urls.apiKey}");
     final response =await http.get(url);
     if (response.statusCode == 200) {

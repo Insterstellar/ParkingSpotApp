@@ -17,6 +17,7 @@ import 'package:parking/widgets/custom_button.dart';
 import 'package:parking/widgets/custom_list.dart';
 import 'package:parking/widgets/custom_text.dart';
 
+import '../booking/old/junk.dart';
 import '../data/no_items_available.dart';
 import '../widgets/drawer_widget.dart';
 import 'drawerPages/favorites_page.dart';
@@ -54,8 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
      SaveParking(),
    //BookingPage(),
   MyBooking(),
-    PaymentPage(),
-    NoItemsFoundPage(),
+    CustomCardPaymentScreen()
+   // PaymentPage(),
+    //NoItemsFoundPage(),
 
    // ParkingDetails()
   ];
